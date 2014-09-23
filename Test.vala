@@ -1,20 +1,12 @@
 
-namespace Veronica {
+namespace VeronicaFX {
 
 	public class Test : GLib.Object {
 		
 		private scgi.Server server;
 		private uint16 port = 4000;
-		private int max_threads = 8;
-		
-		private const string RESPONSE_STATUS_OK = "200 OK";
-		private const string RESPONSE_STATUS_ERROR = "500 Internal Server Error";
-		private const string RESPONSE_STATUS_NOT_FOUND = "404 Resource Not Found";
-		
-		private const string CONTENT_TYPE_TEXT_HTML = "text/html";
-		private const string CONTENT_TYPE_TEXT_JSON = "text/json";
-		private const string CONTENT_TYPE_TEXT_PLAIN = "text/plain";
-		
+		private int max_threads = 16;
+
 		public static void main() {
 			Test app = new Test();
 			app.run();
@@ -26,7 +18,7 @@ namespace Veronica {
 		
 		private void handleRequest(scgi.Request request) {
 			var response = this.getResponse(request);
-			this.writeResponseHeaders(request, Test.RESPONSE_STATUS_OK, Test.CONTENT_TYPE_TEXT_PLAIN, response.length);
+			this.writeResponseHeaders(request, HTTPConstants.RESPONSE_STATUS_OK, HTTPConstants.CONTENT_TYPE_TEXT_PLAIN, response.length);
 			
 			stdout.printf(response);
 			request.output.write(response.data);
@@ -42,6 +34,25 @@ namespace Veronica {
 				response += line;
 			}
 			
+//~ 			response += "\nData:\n";
+			
+//~ 			string line = "";
+//~ 			stdout.printf("Creating Stream");
+			
+//~ 			var file = File.new_for_path ("/home/nick/asdfasdfasdfasdf.txt");
+//~ 			var stream = (DataInputStream)request.input;
+
+			var length = int.parse(request.params["CONTENT_LENGTH"]);
+			var buffer = new uchar[length];
+			request.input.read(buffer);
+
+			var builder = new StringBuilder();
+			for (uint i = 0; i < length; i++) {
+				builder.append_c((char)buffer[i]);
+			}
+			
+			response += builder.str;
+
 			return response;
 		}
 		
@@ -49,7 +60,7 @@ namespace Veronica {
 			string headers = "Status: " + status_code + "\n"
 				+ "Content-Type: " + content_type + "\n"
 				+ "Content-Length: " + content_length.to_string() + "\n\n";
-			
+
 			stdout.printf(headers);
 			request.output.write(headers.data);
 		}
