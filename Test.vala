@@ -33,14 +33,6 @@ namespace VeronicaFX {
 				string line = "Key: " + key + " Value: " + request.params[key] + "\n";
 				response += line;
 			}
-			
-//~ 			response += "\nData:\n";
-			
-//~ 			string line = "";
-//~ 			stdout.printf("Creating Stream");
-			
-//~ 			var file = File.new_for_path ("/home/nick/asdfasdfasdfasdf.txt");
-//~ 			var stream = (DataInputStream)request.input;
 
 			var length = int.parse(request.params["CONTENT_LENGTH"]);
 			var buffer = new uchar[length];
